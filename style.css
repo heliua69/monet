@@ -1,12 +1,21 @@
-/* General body styling */
-body {
+@font-face {
+    font-family: 'NDOT';
+    src: url('./NDOT-47.ttf');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, #clock, #greeting, #todo-container, #todo-container h3 {
+    font-family: 'NDOT', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0; /* Remove default body margin */
     padding: 0; /* Remove default body padding */
     overflow: hidden; /* Prevent scrollbars from appearing */
     /* Use a clean system font stack for a native, modern feel */
     /* Prioritizes OS-native fonts, falling back through the list */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
     /* Slightly off-white text can feel softer than pure white */
     color: rgba(0, 0, 0, 0.95);
     /* Suggests smoother font rendering to the browser */
@@ -55,12 +64,13 @@ body {
 
 /* Styling for the clock element */
 #clock {
+    font-family: 'NDOT', sans-serif;
     /* Large font size for prominence */
-    font-size: 6.5em; /* Approx 104px if base font-size is 16px */
+    font-size: 120px; /* Approx 128px if base font-size is 16px */
     /* Medium weight for clarity */
-    font-weight: 500;
+    font-weight: 400;
     /* Minor adjustments for visual appeal */
-    letter-spacing: -0.01em; /* Slightly tighter spacing */
+    letter-spacing: 0.02em; /* Slightly tighter spacing */
     line-height: 1.1; /* Control line height */
     margin-bottom: 5px; /* Space below the clock */
     animation: fadeIn 2s ease-in-out;
@@ -68,12 +78,14 @@ body {
 
 /* Styling for the greeting element */
 #greeting {
+    font-family: 'NDOT', sans-serif;
     /* Smaller font size, less prominent than the clock */
-    font-size: 2em; /* Approx 32px */
+    font-size: 36px; /* Approx 40px */
     /* Regular weight, lighter than the clock */
     font-weight: 400;
     /* Slightly transparent to recede visually */
     opacity: 0.9;
+    letter-spacing: 0.02em;
     line-height: 1.4; /* Control line height */
     animation: fadeIn 2s ease-in-out;
 }
@@ -117,6 +129,9 @@ body {
 
 /* To-Do List Styling */
 #todo-container {
+    font-family: 'NDOT', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.02em;
     position: fixed;
     bottom: 120px;
     right: 20px;
@@ -130,6 +145,8 @@ body {
 }
 
 #todo-container h3 {
+    font-family: 'NDOT', sans-serif;
+    font-weight: 700;
     margin: 0 0 15px 0;
     color: #333;
     font-size: 1.2em;
@@ -142,6 +159,8 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
 }
 
 #todo-list {
@@ -159,6 +178,8 @@ body {
     justify-content: space-between;
     align-items: center;
     border: 1px solid rgba(0, 0, 0, 0.1);
+    font-weight: 400;
+    letter-spacing: 0.02em;
 }
 
 #todo-list button {
