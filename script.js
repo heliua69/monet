@@ -206,77 +206,7 @@ function updateGreetingColor() {
     adjustColor();
 }
 
-// Function to add a simple to-do list
-function initializeTodoList() {
-    const todoContainer = document.getElementById('todo-container');
-    const todoInput = document.getElementById('todo-input');
-    const todoList = document.getElementById('todo-list');
-    const tikBotButton = document.getElementById('tikbot-button');
-
-    // Ensure all elements exist
-    if (!todoContainer || !todoInput || !todoList || !tikBotButton) {
-        console.error('Todo list elements not found');
-        return;
-    }
-
-    // Initialize todo container display state
-    todoContainer.style.display = 'none';
-
-    // Add click event to toggle todo list
-    tikBotButton.addEventListener('click', () => {
-        const isHidden = todoContainer.style.display === 'none';
-        todoContainer.style.display = isHidden ? 'block' : 'none';
-    });
-
-    // Handle adding new todos
-    todoInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter' && todoInput.value.trim() !== '') {
-            const listItem = document.createElement('li');
-            listItem.style.display = 'flex';
-            listItem.style.justifyContent = 'space-between';
-            listItem.style.alignItems = 'center';
-            listItem.style.marginBottom = '8px';
-
-            const taskText = document.createElement('span');
-            taskText.textContent = todoInput.value;
-            listItem.appendChild(taskText);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.style.marginLeft = '10px';
-            deleteButton.style.padding = '5px 10px';
-            deleteButton.style.border = 'none';
-            deleteButton.style.borderRadius = '5px';
-            deleteButton.style.backgroundColor = '#ff6b6b';
-            deleteButton.style.color = 'white';
-            deleteButton.style.cursor = 'pointer';
-
-            deleteButton.addEventListener('click', () => {
-                todoList.removeChild(listItem);
-            });
-
-            listItem.appendChild(deleteButton);
-            todoList.appendChild(listItem);
-            todoInput.value = '';
-        }
-    });
-}
-
 // --- Initialization ---
-
-// Run the functions once immediately when the script loads
-setRandomBackgroundVideo(); // Set the initial background video
-updateClock();            // Display the initial time
-updateGreeting();         // Display the initial greeting
-
-// Call the function to adjust clock color based on video
-adjustClockColorBasedOnVideo();
-
-// Call the function to adjust greeting color based on video
-updateGreetingColor();
-
-// Initialize the to-do list
-initializeTodoList();
 
 // Ensure the video resumes playback when the page becomes visible again
 document.addEventListener('visibilitychange', () => {
@@ -296,5 +226,73 @@ setInterval(updateClock, 1000);
 // the user leaves the tab open across time boundaries (noon, 6 PM).
 // setInterval(updateGreeting, 60000); // 60000ms = 1 minute
 
-// Call initializeTodoList after the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', initializeTodoList);
+// Initialize everything when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize core functionality
+    setRandomBackgroundVideo();
+    updateClock();
+    updateGreeting();
+    adjustClockColorBasedOnVideo();
+    updateGreetingColor();
+    
+    // Initialize todo list functionality
+    const todoContainer = document.getElementById('todo-container');
+    const todoInput = document.getElementById('todo-input');
+    const todoList = document.getElementById('todo-list');
+    const tikBotButton = document.getElementById('tikbot-button');
+
+    if (todoContainer && todoInput && todoList && tikBotButton) {
+        // Set initial state
+        todoContainer.style.display = 'none';
+
+        // Configure button
+        tikBotButton.style.backgroundImage = 'url("check.png")';
+        
+        // Load saved todos
+        const savedTodos = JSON.parse(localStorage.getItem('todos') || '[]');
+        savedTodos.forEach(todoText => {
+            const listItem = createTodoItem(todoText);
+            todoList.appendChild(listItem);
+        });
+
+        // Toggle todo list
+        tikBotButton.addEventListener('click', () => {
+            const isHidden = todoContainer.style.display === 'none';
+            todoContainer.style.display = isHidden ? 'block' : 'none';
+        });
+
+        // Function to create a todo item
+        function createTodoItem(text) {
+            const listItem = document.createElement('li');
+            const taskText = document.createElement('span');
+            taskText.textContent = text;
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', () => {
+                listItem.remove();
+                saveTodos();
+            });
+            
+            listItem.appendChild(taskText);
+            listItem.appendChild(deleteButton);
+            return listItem;
+        }
+
+        // Function to save todos to localStorage
+        function saveTodos() {
+            const todos = Array.from(todoList.querySelectorAll('li span')).map(span => span.textContent);
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+
+        // Handle new todo items
+        todoInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter' && todoInput.value.trim() !== '') {
+                const listItem = createTodoItem(todoInput.value);
+                todoList.appendChild(listItem);
+                saveTodos();
+                todoInput.value = '';
+            }
+        });
+    }
+});
