@@ -164,29 +164,67 @@ function adjustClockColorBasedOnVideo() {
     updateClockColor();
 }
 
-// Function to add a simple to-do list
-function initializeTodoList() {
+// Function to add a TikBot-style to-do list
+function initializeTikBotTodoList() {
+    const tikBotButton = document.createElement('button');
+    tikBotButton.id = 'tikbot-button';
+    tikBotButton.textContent = ''; // Remove text content
+    tikBotButton.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'white\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'20 6 9 17 4 12\'/%3E%3C/svg%3E")';
+    tikBotButton.style.backgroundRepeat = 'no-repeat';
+    tikBotButton.style.backgroundPosition = 'center';
+    tikBotButton.style.backgroundSize = '50%';
+    tikBotButton.style.position = 'absolute';
+    tikBotButton.style.bottom = '20px';
+    tikBotButton.style.right = '20px';
+    tikBotButton.style.background = '#ff6b6b';
+    tikBotButton.style.color = 'white';
+    tikBotButton.style.border = 'none';
+    tikBotButton.style.borderRadius = '50%';
+    tikBotButton.style.width = '60px';
+    tikBotButton.style.height = '60px';
+    tikBotButton.style.fontSize = '1em';
+    tikBotButton.style.cursor = 'pointer';
+    tikBotButton.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.3)';
+    tikBotButton.style.transition = 'transform 0.3s ease';
+
+    tikBotButton.addEventListener('mouseenter', () => {
+        tikBotButton.style.transform = 'scale(1.1)';
+    });
+
+    tikBotButton.addEventListener('mouseleave', () => {
+        tikBotButton.style.transform = 'scale(1)';
+    });
+
     const todoContainer = document.createElement('div');
     todoContainer.id = 'todo-container';
     todoContainer.style.position = 'absolute';
-    todoContainer.style.top = '10px';
-    todoContainer.style.right = '10px';
-    todoContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-    todoContainer.style.padding = '10px';
-    todoContainer.style.borderRadius = '5px';
-    todoContainer.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+    todoContainer.style.bottom = '100px';
+    todoContainer.style.right = '20px';
+    todoContainer.style.background = 'rgba(0, 0, 0, 0.6)';
+    todoContainer.style.padding = '15px';
+    todoContainer.style.borderRadius = '10px';
+    todoContainer.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.5)';
+    todoContainer.style.color = 'white';
+    todoContainer.style.fontSize = '1em';
+    todoContainer.style.fontFamily = 'Inter, sans-serif';
+    todoContainer.style.display = 'none';
 
     const todoTitle = document.createElement('h3');
     todoTitle.textContent = 'To-Do List';
     todoTitle.style.margin = '0 0 10px 0';
+    todoTitle.style.fontSize = '1.2em';
+    todoTitle.style.fontWeight = '600';
     todoContainer.appendChild(todoTitle);
 
     const todoInput = document.createElement('input');
     todoInput.type = 'text';
     todoInput.placeholder = 'Add a new task';
     todoInput.style.width = '100%';
+    todoInput.style.padding = '8px';
     todoInput.style.marginBottom = '10px';
-    todoInput.style.padding = '5px';
+    todoInput.style.border = 'none';
+    todoInput.style.borderRadius = '5px';
+    todoInput.style.fontSize = '1em';
     todoContainer.appendChild(todoInput);
 
     const todoList = document.createElement('ul');
@@ -198,13 +236,30 @@ function initializeTodoList() {
         if (event.key === 'Enter' && todoInput.value.trim() !== '') {
             const listItem = document.createElement('li');
             listItem.textContent = todoInput.value;
-            listItem.style.marginBottom = '5px';
+            listItem.style.marginBottom = '8px';
+            listItem.style.display = 'flex';
+            listItem.style.justifyContent = 'space-between';
+            listItem.style.alignItems = 'center';
 
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete';
-            deleteButton.style.marginLeft = '10px';
-            deleteButton.style.padding = '2px 5px';
-            deleteButton.style.fontSize = '0.8em';
+            deleteButton.style.background = '#ff6b6b';
+            deleteButton.style.border = 'none';
+            deleteButton.style.borderRadius = '5px';
+            deleteButton.style.color = 'white';
+            deleteButton.style.padding = '5px 10px';
+            deleteButton.style.fontSize = '0.9em';
+            deleteButton.style.cursor = 'pointer';
+            deleteButton.style.transition = 'background 0.3s ease';
+
+            deleteButton.addEventListener('mouseenter', () => {
+                deleteButton.style.background = '#ff4c4c';
+            });
+
+            deleteButton.addEventListener('mouseleave', () => {
+                deleteButton.style.background = '#ff6b6b';
+            });
+
             deleteButton.addEventListener('click', () => {
                 todoList.removeChild(listItem);
             });
@@ -215,6 +270,11 @@ function initializeTodoList() {
         }
     });
 
+    tikBotButton.addEventListener('click', () => {
+        todoContainer.style.display = todoContainer.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.body.appendChild(tikBotButton);
     document.body.appendChild(todoContainer);
 }
 
@@ -228,8 +288,8 @@ updateGreeting();         // Display the initial greeting
 // Call the function to adjust clock color based on video
 adjustClockColorBasedOnVideo();
 
-// Initialize the to-do list
-initializeTodoList();
+// Initialize the TikBot-style to-do list
+initializeTikBotTodoList();
 
 // Ensure the video resumes playback when the page becomes visible again
 document.addEventListener('visibilitychange', () => {
