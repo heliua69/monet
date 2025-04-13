@@ -164,6 +164,48 @@ function adjustClockColorBasedOnVideo() {
     updateClockColor();
 }
 
+// Adjust greeting color based on video brightness
+function updateGreetingColor() {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+        console.error('Canvas context not available.');
+        return;
+    }
+
+    canvas.width = 100; // Small size for performance
+    canvas.height = 100;
+
+    function adjustColor() {
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        let r = 0, g = 0, b = 0;
+        for (let i = 0; i < data.length; i += 4) {
+            r += data[i];     // Red
+            g += data[i + 1]; // Green
+            b += data[i + 2]; // Blue
+        }
+
+        const pixelCount = data.length / 4;
+        r = Math.floor(r / pixelCount);
+        g = Math.floor(g / pixelCount);
+        b = Math.floor(b / pixelCount);
+
+        // Calculate brightness using the luminance formula
+        const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+
+        // Set greeting color to white for dark backgrounds and black for bright backgrounds
+        greetingElement.style.color = brightness < 128 ? 'white' : 'black';
+
+        requestAnimationFrame(adjustColor);
+    }
+
+    adjustColor();
+}
+
 // Function to add a simple to-do list
 function initializeTodoList() {
     const todoContainer = document.createElement('div');
@@ -237,8 +279,8 @@ function initializeTodoList() {
     tikBotButton.style.borderRadius = '50%'; // Make it a sphere
     tikBotButton.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.3)'; // Add a soft shadow for aesthetics
 
-    tikBotButton.style.width = '80px'; // Increase the width
-    tikBotButton.style.height = '80px'; // Increase the height
+    tikBotButton.style.width = '40px'; // Increase the width
+    tikBotButton.style.height = '40px'; // Increase the height
 
     document.body.appendChild(tikBotButton);
 }
@@ -252,6 +294,9 @@ updateGreeting();         // Display the initial greeting
 
 // Call the function to adjust clock color based on video
 adjustClockColorBasedOnVideo();
+
+// Call the function to adjust greeting color based on video
+updateGreetingColor();
 
 // Initialize the to-do list
 initializeTodoList();
