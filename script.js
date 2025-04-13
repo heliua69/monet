@@ -208,45 +208,49 @@ function updateGreetingColor() {
 
 // Function to add a simple to-do list
 function initializeTodoList() {
-    const todoContainer = document.createElement('div');
-    todoContainer.id = 'todo-container';
-    todoContainer.style.position = 'absolute';
-    todoContainer.style.top = '10px';
-    todoContainer.style.right = '10px';
-    todoContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-    todoContainer.style.padding = '10px';
-    todoContainer.style.borderRadius = '5px';
-    todoContainer.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+    const todoContainer = document.getElementById('todo-container');
+    const todoInput = document.getElementById('todo-input');
+    const todoList = document.getElementById('todo-list');
+    const tikBotButton = document.getElementById('tikbot-button');
 
-    const todoTitle = document.createElement('h3');
-    todoTitle.textContent = 'To-Do List';
-    todoTitle.style.margin = '0 0 10px 0';
-    todoContainer.appendChild(todoTitle);
+    // Ensure all elements exist
+    if (!todoContainer || !todoInput || !todoList || !tikBotButton) {
+        console.error('Todo list elements not found');
+        return;
+    }
 
-    const todoInput = document.createElement('input');
-    todoInput.type = 'text';
-    todoInput.placeholder = 'Add a new task';
-    todoInput.style.width = '100%';
-    todoInput.style.marginBottom = '10px';
-    todoInput.style.padding = '5px';
-    todoContainer.appendChild(todoInput);
+    // Initialize todo container display state
+    todoContainer.style.display = 'none';
 
-    const todoList = document.createElement('ul');
-    todoList.style.listStyle = 'none';
-    todoList.style.padding = '0';
-    todoContainer.appendChild(todoList);
+    // Add click event to toggle todo list
+    tikBotButton.addEventListener('click', () => {
+        const isHidden = todoContainer.style.display === 'none';
+        todoContainer.style.display = isHidden ? 'block' : 'none';
+    });
 
+    // Handle adding new todos
     todoInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter' && todoInput.value.trim() !== '') {
             const listItem = document.createElement('li');
-            listItem.textContent = todoInput.value;
-            listItem.style.marginBottom = '5px';
+            listItem.style.display = 'flex';
+            listItem.style.justifyContent = 'space-between';
+            listItem.style.alignItems = 'center';
+            listItem.style.marginBottom = '8px';
+
+            const taskText = document.createElement('span');
+            taskText.textContent = todoInput.value;
+            listItem.appendChild(taskText);
 
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete';
             deleteButton.style.marginLeft = '10px';
-            deleteButton.style.padding = '2px 5px';
-            deleteButton.style.fontSize = '0.8em';
+            deleteButton.style.padding = '5px 10px';
+            deleteButton.style.border = 'none';
+            deleteButton.style.borderRadius = '5px';
+            deleteButton.style.backgroundColor = '#ff6b6b';
+            deleteButton.style.color = 'white';
+            deleteButton.style.cursor = 'pointer';
+
             deleteButton.addEventListener('click', () => {
                 todoList.removeChild(listItem);
             });
@@ -256,33 +260,6 @@ function initializeTodoList() {
             todoInput.value = '';
         }
     });
-
-    document.body.appendChild(todoContainer);
-
-    const tikBotButton = document.createElement('button');
-    tikBotButton.textContent = '';
-    tikBotButton.style.position = 'absolute';
-    tikBotButton.style.bottom = '10px';
-    tikBotButton.style.right = '10px';
-    tikBotButton.style.padding = '10px';
-    tikBotButton.style.borderRadius = '5px';
-    tikBotButton.style.backgroundColor = '#4CAF50';
-    tikBotButton.style.color = 'white';
-    tikBotButton.style.border = 'none';
-    tikBotButton.style.cursor = 'pointer';
-    tikBotButton.style.backgroundImage = 'url("./check.png")'; // Ensure the correct relative path to check.png
-    tikBotButton.style.backgroundSize = '50%'; // Adjust the size to fit the button
-    tikBotButton.style.backgroundRepeat = 'no-repeat';
-    tikBotButton.style.backgroundPosition = 'center';
-
-    tikBotButton.style.backgroundColor = 'rgba(255, 255, 255, 0.8)'; // Cinematic white color
-    tikBotButton.style.borderRadius = '50%'; // Make it a sphere
-    tikBotButton.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.3)'; // Add a soft shadow for aesthetics
-
-    tikBotButton.style.width = '40px'; // Increase the width
-    tikBotButton.style.height = '40px'; // Increase the height
-
-    document.body.appendChild(tikBotButton);
 }
 
 // --- Initialization ---
@@ -318,3 +295,6 @@ setInterval(updateClock, 1000);
 // Optional: Update the greeting periodically (e.g., every minute) in case
 // the user leaves the tab open across time boundaries (noon, 6 PM).
 // setInterval(updateGreeting, 60000); // 60000ms = 1 minute
+
+// Call initializeTodoList after the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initializeTodoList);
