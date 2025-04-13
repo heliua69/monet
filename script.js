@@ -164,6 +164,60 @@ function adjustClockColorBasedOnVideo() {
     updateClockColor();
 }
 
+// Function to add a simple to-do list
+function initializeTodoList() {
+    const todoContainer = document.createElement('div');
+    todoContainer.id = 'todo-container';
+    todoContainer.style.position = 'absolute';
+    todoContainer.style.top = '10px';
+    todoContainer.style.right = '10px';
+    todoContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+    todoContainer.style.padding = '10px';
+    todoContainer.style.borderRadius = '5px';
+    todoContainer.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+
+    const todoTitle = document.createElement('h3');
+    todoTitle.textContent = 'To-Do List';
+    todoTitle.style.margin = '0 0 10px 0';
+    todoContainer.appendChild(todoTitle);
+
+    const todoInput = document.createElement('input');
+    todoInput.type = 'text';
+    todoInput.placeholder = 'Add a new task';
+    todoInput.style.width = '100%';
+    todoInput.style.marginBottom = '10px';
+    todoInput.style.padding = '5px';
+    todoContainer.appendChild(todoInput);
+
+    const todoList = document.createElement('ul');
+    todoList.style.listStyle = 'none';
+    todoList.style.padding = '0';
+    todoContainer.appendChild(todoList);
+
+    todoInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter' && todoInput.value.trim() !== '') {
+            const listItem = document.createElement('li');
+            listItem.textContent = todoInput.value;
+            listItem.style.marginBottom = '5px';
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.style.marginLeft = '10px';
+            deleteButton.style.padding = '2px 5px';
+            deleteButton.style.fontSize = '0.8em';
+            deleteButton.addEventListener('click', () => {
+                todoList.removeChild(listItem);
+            });
+
+            listItem.appendChild(deleteButton);
+            todoList.appendChild(listItem);
+            todoInput.value = '';
+        }
+    });
+
+    document.body.appendChild(todoContainer);
+}
+
 // --- Initialization ---
 
 // Run the functions once immediately when the script loads
@@ -173,6 +227,9 @@ updateGreeting();         // Display the initial greeting
 
 // Call the function to adjust clock color based on video
 adjustClockColorBasedOnVideo();
+
+// Initialize the to-do list
+initializeTodoList();
 
 // Ensure the video resumes playback when the page becomes visible again
 document.addEventListener('visibilitychange', () => {

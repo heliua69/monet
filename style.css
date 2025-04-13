@@ -32,7 +32,7 @@ body {
     background-size: contain; /* Adjust background size to match object-fit */
     /* Optional: Slightly reduce video brightness for better text contrast */
     /* filter: brightness(0.85); */
-    object-fit: fill; /* Ensure the entire video fills the element area */
+    object-fit: fill; /* Ensure the entire video is visible without cropping */
     top: 50%; /* Center the video vertically */
     left: 50%; /* Center the video horizontally */
     transform: translate(-50%, -50%); /* Adjust position to center */
