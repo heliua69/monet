@@ -1,0 +1,89 @@
+/* General body styling */
+body {
+    margin: 0; /* Remove default body margin */
+    padding: 0; /* Remove default body padding */
+    overflow: hidden; /* Prevent scrollbars from appearing */
+    /* Use a clean system font stack for a native, modern feel */
+    /* Prioritizes OS-native fonts, falling back through the list */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    /* Slightly off-white text can feel softer than pure white */
+    color: rgba(0, 0, 0, 0.95);
+    /* Suggests smoother font rendering to the browser */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Styling for the background video */
+#background-video {
+    position: fixed; /* Fix position relative to the viewport */
+    /* Position bottom-right to ensure covering from that corner */
+    right: 0;
+    bottom: 0;
+    /* Ensure video covers the entire screen, even if aspect ratio mismatches */
+    min-width: 100%;
+    min-height: 100%;
+    /* Allow video dimensions to adjust automatically */
+    width: auto;
+    height: auto;
+    /* Place the video behind all other content */
+    z-index: -100;
+    /* Ensure the video content covers the element area */
+    background-size: contain; /* Adjust background size to match object-fit */
+    /* Optional: Slightly reduce video brightness for better text contrast */
+    /* filter: brightness(0.85); */
+    object-fit: fill; /* Ensure the entire video fills the element area */
+    top: 50%; /* Center the video vertically */
+    left: 50%; /* Center the video horizontally */
+    transform: translate(-50%, -50%); /* Adjust position to center */
+}
+
+/* Container for the overlaid text content */
+.content {
+    display: flex; /* Enable flexbox layout */
+    flex-direction: column; /* Stack children vertically */
+    justify-content: center; /* Center children vertically */
+    align-items: center; /* Center children horizontally */
+    height: 100vh; /* Make container full viewport height */
+    text-align: center; /* Center text within children */
+
+    /* Enhanced, softer text shadow for readability */
+    /* Format: offset-x | offset-y | blur-radius | color */
+    text-shadow: 0px 3px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Styling for the clock element */
+#clock {
+    /* Large font size for prominence */
+    font-size: 6.5em; /* Approx 104px if base font-size is 16px */
+    /* Medium weight for clarity */
+    font-weight: 500;
+    /* Minor adjustments for visual appeal */
+    letter-spacing: -0.01em; /* Slightly tighter spacing */
+    line-height: 1.1; /* Control line height */
+    margin-bottom: 5px; /* Space below the clock */
+}
+
+/* Styling for the greeting element */
+#greeting {
+    /* Smaller font size, less prominent than the clock */
+    font-size: 2em; /* Approx 32px */
+    /* Regular weight, lighter than the clock */
+    font-weight: 400;
+    /* Slightly transparent to recede visually */
+    opacity: 0.9;
+    line-height: 1.4; /* Control line height */
+}
+
+/* --- Optional Subtle Fade-In --- */
+/* Uncomment this section for a gentle fade-in effect on load */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px); /* Slight upward movement */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

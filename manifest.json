@@ -1,0 +1,10 @@
+{
+    "manifest_version": 3,
+    "name": "Minimalist Live New Tab",
+    "version": "1.0",
+    "description": "A clean, minimalist new tab page with random live wallpapers, clock, and greeting.",
+    "chrome_url_overrides": {
+      "newtab": "newtab.html"
+    }
+  }
+  
