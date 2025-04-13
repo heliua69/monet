@@ -11,7 +11,9 @@
 // ** IMPORTANT: Replace these paths with the actual relative paths to YOUR video files **
 // Place your video files inside a 'videos' subfolder within your extension's directory.
 const videoList = [
-    'videos/a.mp4', // Example: 'videos/a.mp4'
+    'videos/a.mp4',
+    'videos/c.mp4', // Example: 'videos/a.mp4'
+    
     
 ];
 
@@ -171,6 +173,15 @@ updateGreeting();         // Display the initial greeting
 
 // Call the function to adjust clock color based on video
 adjustClockColorBasedOnVideo();
+
+// Ensure the video resumes playback when the page becomes visible again
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        videoElement.play().catch(error => {
+            console.error('Error resuming video playback:', error);
+        });
+    }
+});
 
 // --- Timed Updates ---
 
