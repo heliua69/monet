@@ -36,6 +36,7 @@ body {
     top: 50%; /* Center the video vertically */
     left: 50%; /* Center the video horizontally */
     transform: translate(-50%, -50%); /* Adjust position to center */
+    filter: brightness(0.6) contrast(1.2) saturate(1.1);
 }
 
 /* Container for the overlaid text content */
@@ -62,6 +63,7 @@ body {
     letter-spacing: -0.01em; /* Slightly tighter spacing */
     line-height: 1.1; /* Control line height */
     margin-bottom: 5px; /* Space below the clock */
+    animation: fadeIn 2s ease-in-out;
 }
 
 /* Styling for the greeting element */
@@ -73,6 +75,7 @@ body {
     /* Slightly transparent to recede visually */
     opacity: 0.9;
     line-height: 1.4; /* Control line height */
+    animation: fadeIn 2s ease-in-out;
 }
 
 /* --- Optional Subtle Fade-In --- */
@@ -80,10 +83,38 @@ body {
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(8px); /* Slight upward movement */
+        transform: translateY(10px); /* Slight upward movement */
     }
     to {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* --- Enhanced Aesthetic Styles --- */
+
+/* TikBot Button Styling */
+#tikbot-button {
+    background: linear-gradient(135deg, #ff6b6b, #ff4c4c);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#tikbot-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* To-Do List Styling */
+#todo-container {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(50, 50, 50, 0.8));
+    backdrop-filter: blur(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(10px);
+    opacity: 0;
+}
+
+#todo-container.show {
+    transform: translateY(0);
+    opacity: 1;
 }
