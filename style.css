@@ -308,8 +308,8 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
 
 .circle-timer {
     position: relative;
-    width: 200px;
-    height: 200px;
+    width: 300px;
+    height: 300px;
 }
 
 .progress-ring {
@@ -319,15 +319,15 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
 .progress-ring-circle-bg {
     fill: none;
     stroke: rgba(255, 255, 255, 0.1);
-    stroke-width: 8;
+    stroke-width: 10;
 }
 
 .progress-ring-circle {
     fill: none;
     stroke: rgba(255, 255, 255, 0.8);
-    stroke-width: 8;
-    stroke-dasharray: 565.48; /* 2 * π * 90 (radius) */
-    stroke-dashoffset: 565.48;
+    stroke-width: 10;
+    stroke-dasharray: 879.64; /* 2 * π * 140 (radius) */
+    stroke-dashoffset: 879.64;
     transition: stroke-dashoffset 0.1s ease;
 }
 
@@ -339,8 +339,8 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
     text-align: center;
     background: rgba(0, 0, 0, 0.25);
     border-radius: 50%;
-    width: 180px;
-    height: 180px;
+    width: 280px;
+    height: 280px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -351,7 +351,7 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
 
 #pomodoro-timer {
     font-family: 'NDOT', sans-serif;
-    font-size: 36px;
+    font-size: 54px;
     color: rgba(255, 255, 255, 0.95);
     margin-bottom: 5px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -359,7 +359,7 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
 
 #pomodoro-status {
     font-family: 'NDOT', sans-serif;
-    font-size: 14px;
+    font-size: 18px;
     color: rgba(255, 255, 255, 0.8);
 }
 

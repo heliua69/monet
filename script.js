@@ -305,7 +305,7 @@ function updatePomodoroDisplay() {
     const circle = document.querySelector('.progress-ring-circle');
     const totalTime = 25 * 60; // 25 minutes in seconds
     const progress = (timeLeft / totalTime);
-    const circumference = 565.48; // 2 * π * 90 (radius)
+    const circumference = 879.64; // 2 * π * 140 (new radius)
     const offset = circumference * (1 - progress);
     circle.style.strokeDashoffset = offset;
 }
