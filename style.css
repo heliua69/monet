@@ -264,8 +264,8 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
 /* Focus Mode Button */
 #focus-mode-button {
     position: fixed;
-    bottom: 20px;
-    right: 80px;
+    bottom: 75px;  /* Position it above tikbot-button with some spacing */
+    right: 20px;   /* Same right alignment as tikbot-button */
     width: 45px;
     height: 45px;
     border-radius: 50%;
