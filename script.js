@@ -314,15 +314,8 @@ function toggleFocusMode() {
         document.getElementById('todo-container').style.display = 'block';
         // Save focus mode state
         localStorage.setItem('focusModeActive', 'true');
-        // Block navigation
-        window.onbeforeunload = function(e) {
-            e.preventDefault();
-            e.returnValue = '';
-            return '';
-        };
     } else {
         localStorage.setItem('focusModeActive', 'false');
-        window.onbeforeunload = null;
     }
 }
 
