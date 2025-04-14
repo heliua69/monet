@@ -12,9 +12,9 @@
 // Place your video files inside a 'videos' subfolder within your extension's directory.
 const videoList = [
     'videos/a.mp4',
-    'videos/c.mp4', // Example: 'videos/a.mp4'
-    
-    
+    'videos/b.mp4',
+    'videos/c.mp4',
+    'videos/d.mp4'
 ];
 
 // --- DOM Elements ---
