@@ -226,6 +226,106 @@ setInterval(updateClock, 1000);
 // the user leaves the tab open across time boundaries (noon, 6 PM).
 // setInterval(updateGreeting, 60000); // 60000ms = 1 minute
 
+// Initialize variables for Pomodoro and focus mode
+let isFocusModeActive = false;
+let pomodoroInterval;
+let timeLeft = 25 * 60; // 25 minutes in seconds
+let wasCtrlZPressed = false;
+
+function toggleFocusMode() {
+    isFocusModeActive = !isFocusModeActive;
+    document.body.classList.toggle('focus-mode-active', isFocusModeActive);
+    const pomodoroContainer = document.getElementById('pomodoro-container');
+    const todoContainer = document.getElementById('todo-container');
+    
+    if (isFocusModeActive) {
+        // Show todo list and pomodoro timer
+        todoContainer.style.display = 'block';
+        pomodoroContainer.style.display = 'block';
+        
+        // Request fullscreen
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        }
+        
+        // Start Pomodoro timer
+        startPomodoro();
+        
+        // Save focus mode state
+        localStorage.setItem('focusModeActive', 'true');
+        
+        // Prevent tab switching
+        window.addEventListener('beforeunload', preventTabSwitch);
+    } else {
+        // Exit fullscreen
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        }
+        
+        // Stop and reset Pomodoro timer
+        stopPomodoro();
+        pomodoroContainer.style.display = 'none';
+        
+        localStorage.setItem('focusModeActive', 'false');
+        window.removeEventListener('beforeunload', preventTabSwitch);
+    }
+}
+
+function startPomodoro() {
+    timeLeft = 25 * 60;
+    updatePomodoroDisplay();
+    document.getElementById('pomodoro-status').textContent = 'Focus Time';
+    
+    pomodoroInterval = setInterval(() => {
+        timeLeft--;
+        updatePomodoroDisplay();
+        
+        if (timeLeft <= 0) {
+            completePomodoroSession();
+        }
+    }, 1000);
+}
+
+function stopPomodoro() {
+    if (pomodoroInterval) {
+        clearInterval(pomodoroInterval);
+        pomodoroInterval = null;
+    }
+    timeLeft = 25 * 60;
+    updatePomodoroDisplay();
+}
+
+function updatePomodoroDisplay() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    document.getElementById('pomodoro-timer').textContent = display;
+
+    // Update circle progress
+    const circle = document.querySelector('.progress-ring-circle');
+    const totalTime = 25 * 60; // 25 minutes in seconds
+    const progress = (timeLeft / totalTime);
+    const circumference = 565.48; // 2 * π * 90 (radius)
+    const offset = circumference * (1 - progress);
+    circle.style.strokeDashoffset = offset;
+}
+
+function completePomodoroSession() {
+    stopPomodoro();
+    document.getElementById('pomodoro-status').textContent = 'Session Complete!';
+    // Allow tab switching after session completion
+    window.removeEventListener('beforeunload', preventTabSwitch);
+}
+
+function preventTabSwitch(e) {
+    // Only prevent if Ctrl+Z wasn't pressed
+    if (!wasCtrlZPressed) {
+        e.preventDefault();
+        e.returnValue = '';
+        return e.returnValue;
+    }
+}
+
 // Initialize everything when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize core functionality
@@ -240,10 +340,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const todoInput = document.getElementById('todo-input');
     const todoList = document.getElementById('todo-list');
     const tikBotButton = document.getElementById('tikbot-button');
+    const pomodoroContainer = document.getElementById('pomodoro-container');
 
     if (todoContainer && todoInput && todoList && tikBotButton) {
         // Set initial state
         todoContainer.style.display = 'none';
+        pomodoroContainer.style.display = 'none';
 
         // Configure button
         tikBotButton.style.backgroundImage = 'url("check.png")';
@@ -261,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
             todoContainer.style.display = isHidden ? 'block' : 'none';
         });
 
-        // Function to create a todo item
+        // Handle todo list functionality
         function createTodoItem(text) {
             const listItem = document.createElement('li');
             const taskText = document.createElement('span');
@@ -279,13 +381,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return listItem;
         }
 
-        // Function to save todos to localStorage
         function saveTodos() {
-            const todos = Array.from(todoList.querySelectorAll('li span')).map(span => span.textContent);
+            const todos = Array.from(todoList.querySelectorAll('li span'))
+                .map(span => span.textContent);
             localStorage.setItem('todos', JSON.stringify(todos));
         }
 
-        // Handle new todo items
         todoInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter' && todoInput.value.trim() !== '') {
                 const listItem = createTodoItem(todoInput.value);
@@ -296,28 +397,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Handle Ctrl+Z shortcut
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key.toLowerCase() === 'z') {
+            wasCtrlZPressed = true;
+            if (isFocusModeActive) {
+                toggleFocusMode();
+            }
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (e.key.toLowerCase() === 'z') {
+            wasCtrlZPressed = false;
+        }
+    });
+
+    // Handle fullscreen changes
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement && isFocusModeActive) {
+            toggleFocusMode(); // Exit focus mode if user exits fullscreen
+        }
+    });
+
+    // Initialize focus mode button
+    document.getElementById('focus-mode-button').addEventListener('click', toggleFocusMode);
+
     // Restore focus mode if it was active
     if (localStorage.getItem('focusModeActive') === 'true') {
         toggleFocusMode();
     }
 });
-
-// Focus Mode Implementation
-let isFocusModeActive = false;
-
-function toggleFocusMode() {
-    isFocusModeActive = !isFocusModeActive;
-    document.body.classList.toggle('focus-mode-active', isFocusModeActive);
-    
-    if (isFocusModeActive) {
-        // Show todo list if it's hidden
-        document.getElementById('todo-container').style.display = 'block';
-        // Save focus mode state
-        localStorage.setItem('focusModeActive', 'true');
-    } else {
-        localStorage.setItem('focusModeActive', 'false');
-    }
-}
-
-// Initialize focus mode button
-document.getElementById('focus-mode-button').addEventListener('click', toggleFocusMode);

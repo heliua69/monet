@@ -30,6 +30,19 @@
     </div>
 
     <div class="focus-mode-overlay"></div>
+    
+    <div id="pomodoro-container" style="display: none;">
+        <div class="circle-timer">
+            <svg class="progress-ring" width="200" height="200">
+                <circle class="progress-ring-circle-bg" cx="100" cy="100" r="90"/>
+                <circle class="progress-ring-circle" cx="100" cy="100" r="90"/>
+            </svg>
+            <div class="timer-content">
+                <div id="pomodoro-timer">25:00</div>
+                <div id="pomodoro-status">Focus Time</div>
+            </div>
+        </div>
+    </div>
 
     <button id="focus-mode-button" title="Toggle Focus Mode"></button>
     <button id="tikbot-button"></button>
