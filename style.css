@@ -328,7 +328,7 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
     stroke-width: 10;
     stroke-dasharray: 879.64; /* 2 * π * 140 (radius) */
     stroke-dashoffset: 879.64;
-    transition: stroke-dashoffset 0.1s ease;
+    transition: stroke-dashoffset 0.1s ease, stroke 0.5s ease;
 }
 
 .timer-content {
@@ -347,6 +347,11 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
     align-items: center;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    transition: background-color 0.5s ease;
+}
+
+.timer-content.rest-period {
+    background: rgba(76, 175, 80, 0.15);
 }
 
 #pomodoro-timer {
@@ -361,6 +366,15 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
     font-family: 'NDOT', sans-serif;
     font-size: 18px;
     color: rgba(255, 255, 255, 0.8);
+    transition: color 0.3s ease;
+}
+
+#cycle-counter {
+    font-family: 'NDOT', sans-serif;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 5px;
+    transition: color 0.3s ease;
 }
 
 .focus-mode-active {

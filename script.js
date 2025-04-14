@@ -231,6 +231,8 @@ let isFocusModeActive = false;
 let pomodoroInterval;
 let timeLeft = 25 * 60; // 25 minutes in seconds
 let wasCtrlZPressed = false;
+let isRestPeriod = false;
+let cycleCount = 0;
 
 function toggleFocusMode() {
     isFocusModeActive = !isFocusModeActive;
@@ -239,6 +241,10 @@ function toggleFocusMode() {
     const todoContainer = document.getElementById('todo-container');
     
     if (isFocusModeActive) {
+        // Reset Pomodoro states
+        isRestPeriod = false;
+        cycleCount = 0;
+        
         // Show todo list and pomodoro timer
         todoContainer.style.display = 'block';
         pomodoroContainer.style.display = 'block';
@@ -249,7 +255,7 @@ function toggleFocusMode() {
         }
         
         // Start Pomodoro timer
-        startPomodoro();
+        startPomodoroWorkPeriod();
         
         // Save focus mode state
         localStorage.setItem('focusModeActive', 'true');
@@ -271,17 +277,55 @@ function toggleFocusMode() {
     }
 }
 
-function startPomodoro() {
-    timeLeft = 25 * 60;
+function startPomodoroWorkPeriod() {
+    timeLeft = 25 * 60; // 25 minutes
+    isRestPeriod = false;
     updatePomodoroDisplay();
     document.getElementById('pomodoro-status').textContent = 'Focus Time';
+    document.querySelector('.progress-ring-circle').style.stroke = 'rgba(6, 223, 6, 0.8)';
+    document.querySelector('.timer-content').classList.remove('rest-period');
+    document.getElementById('cycle-counter').textContent = `Cycle: ${cycleCount + 1}/2`;
+    playNotificationSound();
+    startTimer();
+}
+
+function startPomodoroRestPeriod() {
+    timeLeft = 5 * 60; // 5 minutes
+    isRestPeriod = true;
+    updatePomodoroDisplay();
+    document.getElementById('pomodoro-status').textContent = 'Rest Time';
+    document.querySelector('.progress-ring-circle').style.stroke = 'rgba(250, 3, 3, 0.8)';
+    document.querySelector('.timer-content').classList.add('rest-period');
+    playNotificationSound();
+    startTimer();
+}
+
+function playNotificationSound() {
+    const sound = document.getElementById('timer-sound');
+    sound.currentTime = 0;
+    sound.play().catch(err => console.log('Audio play failed:', err));
+}
+
+function startTimer() {
+    if (pomodoroInterval) {
+        clearInterval(pomodoroInterval);
+    }
     
     pomodoroInterval = setInterval(() => {
         timeLeft--;
         updatePomodoroDisplay();
         
         if (timeLeft <= 0) {
-            completePomodoroSession();
+            if (isRestPeriod) {
+                cycleCount++;
+                if (cycleCount >= 2) { // 2 cycles = 1 hour
+                    completePomodoroSession();
+                } else {
+                    startPomodoroWorkPeriod();
+                }
+            } else {
+                startPomodoroRestPeriod();
+            }
         }
     }, 1000);
 }
@@ -292,6 +336,8 @@ function stopPomodoro() {
         pomodoroInterval = null;
     }
     timeLeft = 25 * 60;
+    isRestPeriod = false;
+    cycleCount = 0;
     updatePomodoroDisplay();
 }
 
@@ -303,9 +349,9 @@ function updatePomodoroDisplay() {
 
     // Update circle progress
     const circle = document.querySelector('.progress-ring-circle');
-    const totalTime = 25 * 60; // 25 minutes in seconds
+    const totalTime = isRestPeriod ? 5 * 60 : 25 * 60;
     const progress = (timeLeft / totalTime);
-    const circumference = 879.64; // 2 * π * 140 (new radius)
+    const circumference = 879.64; // 2 * π * 140 (radius)
     const offset = circumference * (1 - progress);
     circle.style.strokeDashoffset = offset;
 }
@@ -313,17 +359,13 @@ function updatePomodoroDisplay() {
 function completePomodoroSession() {
     stopPomodoro();
     document.getElementById('pomodoro-status').textContent = 'Session Complete!';
-    // Allow tab switching after session completion
+    // Allow tab switching and exit focus mode after 3 seconds
     window.removeEventListener('beforeunload', preventTabSwitch);
-}
-
-function preventTabSwitch(e) {
-    // Only prevent if Ctrl+Z wasn't pressed
-    if (!wasCtrlZPressed) {
-        e.preventDefault();
-        e.returnValue = '';
-        return e.returnValue;
-    }
+    setTimeout(() => {
+        if (isFocusModeActive) {
+            toggleFocusMode();
+        }
+    }, 3000);
 }
 
 // Initialize everything when the DOM is fully loaded
