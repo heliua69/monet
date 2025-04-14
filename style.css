@@ -351,7 +351,7 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
 }
 
 .timer-content.rest-period {
-    background: rgba(76, 175, 80, 0.15);
+    background: rgba(180, 18, 12, 0.692);
 }
 
 #pomodoro-timer {
