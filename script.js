@@ -295,4 +295,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Restore focus mode if it was active
+    if (localStorage.getItem('focusModeActive') === 'true') {
+        toggleFocusMode();
+    }
 });
+
+// Focus Mode Implementation
+let isFocusModeActive = false;
+
+function toggleFocusMode() {
+    isFocusModeActive = !isFocusModeActive;
+    document.body.classList.toggle('focus-mode-active', isFocusModeActive);
+    
+    if (isFocusModeActive) {
+        // Show todo list if it's hidden
+        document.getElementById('todo-container').style.display = 'block';
+        // Save focus mode state
+        localStorage.setItem('focusModeActive', 'true');
+        // Block navigation
+        window.onbeforeunload = function(e) {
+            e.preventDefault();
+            e.returnValue = '';
+            return '';
+        };
+    } else {
+        localStorage.setItem('focusModeActive', 'false');
+        window.onbeforeunload = null;
+    }
+}
+
+// Initialize focus mode button
+document.getElementById('focus-mode-button').addEventListener('click', toggleFocusMode);
