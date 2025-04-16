@@ -25,6 +25,9 @@ const videoElement = document.getElementById('background-video');
 const clockElement = document.getElementById('clock');
 const greetingElement = document.getElementById('greeting');
 
+// Add clock format preference to the top with other variables
+let is24HourFormat = true;
+
 // --- Core Functions ---
 
 /**
@@ -89,15 +92,20 @@ function setRandomBackgroundVideo() {
  * Updates the clock element with the current time (HH:MM format).
  */
 function updateClock() {
-    if (!clockElement) return; // Exit if clock element not found
+    if (!clockElement) return;
 
     const now = new Date();
-    // Get hours and minutes, padding with a leading zero if needed (e.g., '09' instead of '9')
-    const hours = String(now.getHours()).padStart(2, '0');
+    let hours = now.getHours();
     const minutes = String(now.getMinutes()).padStart(2, '0');
-
-    // Update the text content of the clock element
-    clockElement.textContent = `${hours}:${minutes}`;
+    
+    if (!is24HourFormat) {
+        const period = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12; // Convert to 12-hour format
+        clockElement.textContent = `${hours}:${minutes} ${period}`;
+    } else {
+        hours = String(hours).padStart(2, '0');
+        clockElement.textContent = `${hours}:${minutes}`;
+    }
 }
 
 /**
@@ -377,6 +385,38 @@ document.addEventListener('DOMContentLoaded', () => {
     adjustClockColorBasedOnVideo();
     updateGreetingColor();
     
+    // Load clock format preference and set toggle state
+    is24HourFormat = localStorage.getItem('clockFormat24h') !== 'false';
+    const formatToggle = document.getElementById('format-toggle');
+    const formatDots = document.querySelector('.format-dots');
+    const toggleBox = document.querySelector('.format-toggle-box');
+    
+    if (formatToggle) {
+        formatToggle.checked = is24HourFormat;
+    }
+    
+    // Handle format toggle box
+    if (formatDots && toggleBox) {
+        formatDots.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleBox.classList.toggle('show');
+        });
+        
+        // Handle toggle switch change
+        formatToggle.addEventListener('change', () => {
+            is24HourFormat = formatToggle.checked;
+            localStorage.setItem('clockFormat24h', is24HourFormat);
+            updateClock();
+        });
+        
+        // Hide toggle box when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!toggleBox.contains(e.target) && !formatDots.contains(e.target)) {
+                toggleBox.classList.remove('show');
+            }
+        });
+    }
+    
     // Initialize todo list functionality
     const todoContainer = document.getElementById('todo-container');
     const todoInput = document.getElementById('todo-input');
@@ -470,3 +510,9 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleFocusMode();
     }
 });
+
+function toggleClockFormat() {
+    is24HourFormat = !is24HourFormat;
+    localStorage.setItem('clockFormat24h', is24HourFormat);
+    updateClock();
+}
