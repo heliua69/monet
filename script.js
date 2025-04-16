@@ -28,64 +28,90 @@ const greetingElement = document.getElementById('greeting');
 // Add clock format preference to the top with other variables
 let is24HourFormat = true;
 
+// Add video preloading management
+let preloadedVideos = new Map();
+let currentVideoIndex = -1;
+
+function preloadVideo(src) {
+    return new Promise((resolve, reject) => {
+        const video = document.createElement('video');
+        video.preload = 'auto';
+        video.muted = true;
+        video.src = src;
+
+        video.onloadeddata = () => {
+            preloadedVideos.set(src, video);
+            resolve(video);
+        };
+
+        video.onerror = (error) => {
+            console.error(`Error preloading video ${src}:`, error);
+            reject(error);
+        };
+    });
+}
+
+async function preloadNextVideo() {
+    const nextIndex = (currentVideoIndex + 1) % videoList.length;
+    const nextVideoSrc = videoList[nextIndex];
+    
+    if (!preloadedVideos.has(nextVideoSrc)) {
+        try {
+            await preloadVideo(nextVideoSrc);
+        } catch (error) {
+            console.error('Failed to preload next video:', error);
+        }
+    }
+}
+
 // --- Core Functions ---
 
 /**
  * Selects a random video from the videoList and sets it as the background.
  */
 function setRandomBackgroundVideo() {
-    // Basic error checking to ensure elements exist
     if (!videoSourceElement || !videoElement) {
         console.error("Error: Could not find video or source element in the HTML.");
         return;
     }
     if (videoList.length === 0) {
-        console.warn("Video list is empty. Add video paths to the 'videoList' array in script.js.");
-        // Optional: Set a default background color or image here
+        console.warn("Video list is empty.");
         return;
     }
 
-    // Select a random index from the videoList array
-    const randomIndex = Math.floor(Math.random() * videoList.length);
-    const randomVideoPath = videoList[randomIndex];
+    // Select a random index different from the current one
+    let newIndex;
+    do {
+        newIndex = Math.floor(Math.random() * videoList.length);
+    } while (newIndex === currentVideoIndex && videoList.length > 1);
+    
+    currentVideoIndex = newIndex;
+    const videoPath = videoList[currentVideoIndex];
 
-    console.log("Selected video:", randomVideoPath); // Log selected video for debugging
-
-    // Set the 'src' attribute of the <source> element
-    videoSourceElement.setAttribute('src', randomVideoPath);
-
-    // Attempt to automatically set the 'type' attribute based on file extension
-    // This helps the browser load the video more efficiently.
-    const fileExtension = randomVideoPath.split('.').pop().toLowerCase();
-    if (fileExtension === 'webm') {
-         videoSourceElement.setAttribute('type', 'video/webm');
-    } else if (fileExtension === 'mp4') {
-         videoSourceElement.setAttribute('type', 'video/mp4');
-    } else {
-        // Add more types if needed (e.g., 'ogv' for Ogg)
-        console.warn("Unknown video type for:", randomVideoPath, "- Browser will attempt to infer type.");
-        // Clear type attribute if unsure, let browser handle it
-        videoSourceElement.removeAttribute('type');
-    }
-
-    // **Crucial:** Tell the <video> element to load the new source.
-    videoElement.load();
-
-    // Add preload attribute to the video element for smoother playback
-    videoElement.setAttribute('preload', 'auto');
-
-    // Add a loop attribute to the video element to enable looping
-    videoElement.setAttribute('loop', 'true');
-
-    // Use requestAnimationFrame for smoother rendering
-    function smoothPlayVideo() {
+    // Use preloaded video if available
+    if (preloadedVideos.has(videoPath)) {
+        const preloadedVideo = preloadedVideos.get(videoPath);
+        videoSourceElement.src = videoPath;
+        videoElement.load();
         videoElement.play().catch(error => {
-            console.log("Video play() promise rejected:", error);
+            console.error('Error playing video:', error);
+        });
+    } else {
+        // Fallback to normal loading if not preloaded
+        videoSourceElement.src = videoPath;
+        videoElement.load();
+        videoElement.play().catch(error => {
+            console.error('Error playing video:', error);
         });
     }
 
-    // Call smoothPlayVideo using requestAnimationFrame
-    requestAnimationFrame(smoothPlayVideo);
+    // Set video attributes for better performance
+    videoElement.setAttribute('playsinline', '');
+    videoElement.setAttribute('preload', 'auto');
+    videoElement.setAttribute('loop', 'true');
+    
+    // Start preloading next video
+    preloadNextVideo();
 }
 
 /**
@@ -128,6 +154,86 @@ function updateGreeting() {
 
     // Update the text content of the greeting element
     greetingElement.textContent = greeting;
+}
+
+// Optimize performance-critical functions
+const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+};
+
+// Optimize canvas operations
+function createOffscreenCanvas(width, height) {
+    let canvas;
+    try {
+        canvas = new OffscreenCanvas(width, height);
+    } catch (e) {
+        canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+    }
+    return canvas;
+}
+
+// Optimize color analysis
+const colorCache = new Map();
+let lastAnalysisTime = 0;
+const ANALYSIS_THROTTLE = 100; // ms
+
+function analyzeVideoColor() {
+    const now = performance.now();
+    if (now - lastAnalysisTime < ANALYSIS_THROTTLE) return;
+    lastAnalysisTime = now;
+
+    const canvas = createOffscreenCanvas(100, 100);
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+
+    let r = 0, g = 0, b = 0;
+    for (let i = 0; i < data.length; i += 16) { // Sample every 4th pixel for performance
+        r += data[i];
+        g += data[i + 1];
+        b += data[i + 2];
+    }
+
+    const pixelCount = data.length / 16;
+    const brightness = (0.299 * (r / pixelCount) + 0.587 * (g / pixelCount) + 0.114 * (b / pixelCount)) | 0;
+    
+    return brightness < 128 ? 'light' : 'dark';
+}
+
+// Optimize color updates with RAF and throttling
+function updateColors() {
+    if (!document.hidden) {
+        const theme = analyzeVideoColor();
+        if (theme) {
+            const elements = document.querySelectorAll('.dynamic-color');
+            elements.forEach(element => {
+                element.dataset.theme = theme;
+                applyThemeColors(element, theme);
+            });
+        }
+        requestAnimationFrame(updateColors);
+    }
+}
+
+function applyThemeColors(element, theme) {
+    if (theme === 'light') {
+        element.style.color = 'rgba(255, 255, 255, 0.95)';
+    } else {
+        element.style.color = 'rgba(0, 0, 0, 0.95)';
+    }
 }
 
 // Function to detect the dominant color of the video and adjust clock color
@@ -430,8 +536,17 @@ function completePomodoroSession() {
 
 // Initialize everything when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Preload initial videos
+    Promise.all(videoList.slice(0, 2).map(preloadVideo))
+        .then(() => {
+            setRandomBackgroundVideo();
+        })
+        .catch(error => {
+            console.error('Error preloading initial videos:', error);
+            setRandomBackgroundVideo(); // Fallback to normal loading
+        });
+
     // Initialize core functionality
-    setRandomBackgroundVideo();
     updateClock();
     updateGreeting();
     adjustClockColorBasedOnVideo();

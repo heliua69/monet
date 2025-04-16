@@ -41,11 +41,16 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
     background-size: contain; /* Adjust background size to match object-fit */
     /* Optional: Slightly reduce video brightness for better text contrast */
     /* filter: brightness(0.85); */
-    object-fit: fill; /* Ensure the entire video is visible without cropping */
+    object-fit: cover; /* Ensure the entire video is visible without cropping */
     top: 50%; /* Center the video vertically */
     left: 50%; /* Center the video horizontally */
     transform: translate(-50%, -50%); /* Adjust position to center */
+    will-change: transform;
     filter: brightness(0.6) contrast(1.2) saturate(1.1);
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    backface-visibility: hidden;
+    perspective: 1000;
 }
 
 /* Container for the overlaid text content */
@@ -56,6 +61,8 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
     align-items: center; /* Center children horizontally */
     height: 100vh; /* Make container full viewport height */
     text-align: center; /* Center text within children */
+    transform: translateZ(0);
+    will-change: transform;
 
     /* Enhanced, softer text shadow for readability */
     /* Format: offset-x | offset-y | blur-radius | color */
