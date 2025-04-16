@@ -208,9 +208,6 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
 }
 
 #todo-list button {
-    background: rgba(0, 123, 255, 0.2);
-    color: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(78, 165, 255, 0.3);
     padding: 6px 12px;
     border-radius: 6px;
     cursor: pointer;
@@ -218,13 +215,11 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
     transition: all 0.3s ease;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 #todo-list button:hover {
-    background: rgba(0, 123, 255, 0.3);
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
 }
 
 /* Focus Mode Styles */

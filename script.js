@@ -214,6 +214,58 @@ function updateGreetingColor() {
     adjustColor();
 }
 
+function updateTodoButtonsColor() {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+        console.error('Canvas context not available.');
+        return;
+    }
+
+    canvas.width = 100;
+    canvas.height = 100;
+
+    function adjustColor() {
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        let r = 0, g = 0, b = 0;
+        for (let i = 0; i < data.length; i += 4) {
+            r += data[i];
+            g += data[i + 1];
+            b += data[i + 2];
+        }
+
+        const pixelCount = data.length / 4;
+        r = Math.floor(r / pixelCount);
+        g = Math.floor(g / pixelCount);
+        b = Math.floor(b / pixelCount);
+
+        // Calculate brightness using the luminance formula
+        const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+
+        // Apply color to all delete buttons
+        const deleteButtons = document.querySelectorAll('#todo-list button');
+        deleteButtons.forEach(button => {
+            if (brightness < 128) {
+                button.style.color = 'rgba(255, 255, 255, 0.95)';
+                button.style.border = '1px solid rgba(255, 255, 255, 0.3)';
+                button.style.background = 'rgba(255, 255, 255, 0.1)';
+            } else {
+                button.style.color = 'rgba(0, 0, 0, 0.95)';
+                button.style.border = '1px solid rgba(0, 0, 0, 0.3)';
+                button.style.background = 'rgba(0, 0, 0, 0.1)';
+            }
+        });
+
+        requestAnimationFrame(adjustColor);
+    }
+
+    adjustColor();
+}
+
 // --- Initialization ---
 
 // Ensure the video resumes playback when the page becomes visible again
@@ -384,6 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateGreeting();
     adjustClockColorBasedOnVideo();
     updateGreetingColor();
+    updateTodoButtonsColor();
     
     // Load clock format preference and set toggle state
     is24HourFormat = localStorage.getItem('clockFormat24h') !== 'false';
@@ -453,6 +506,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('dynamic-color');
             deleteButton.addEventListener('click', () => {
                 listItem.remove();
                 saveTodos();
