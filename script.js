@@ -678,6 +678,36 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('focusModeActive') === 'true') {
         toggleFocusMode();
     }
+
+    // Initialize settings panel
+    const settingsButton = document.getElementById('settings-button');
+    const settingsPanel = document.getElementById('settings-panel');
+    const settingsClockFormat = document.getElementById('settings-clock-format');
+
+    if (settingsButton && settingsPanel) {
+        // Initialize clock format setting
+        settingsClockFormat.checked = is24HourFormat;
+
+        // Toggle settings panel
+        settingsButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            settingsPanel.classList.toggle('show');
+        });
+
+        // Hide settings panel when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!settingsPanel.contains(e.target) && !settingsButton.contains(e.target)) {
+                settingsPanel.classList.remove('show');
+            }
+        });
+
+        // Handle clock format change
+        settingsClockFormat.addEventListener('change', () => {
+            is24HourFormat = settingsClockFormat.checked;
+            localStorage.setItem('clockFormat24h', is24HourFormat);
+            updateClock();
+        });
+    }
 });
 
 function toggleClockFormat() {
