@@ -372,6 +372,63 @@ function updateTodoButtonsColor() {
     adjustColor();
 }
 
+// Remove the static quotes array and add API functionality
+async function fetchQuote() {
+    try {
+        const response = await fetch('https://api.quotable.io/random');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        return {
+            text: data.content,
+            author: data.author
+        };
+    } catch (error) {
+        console.error('Error fetching quote:', error);
+        // Fallback quote in case of API failure
+        return {
+            text: "The best way to predict the future is to create it.",
+            author: "Peter Drucker"
+        };
+    }
+}
+
+// Add showQuotes variable with other variables at the top
+let showQuotes = true;
+
+// Update updateQuote function to respect the showQuotes setting
+async function updateQuote() {
+    const quoteElement = document.getElementById('quote');
+    const quoteAuthorElement = document.getElementById('quote-author');
+    const quoteContainer = document.querySelector('.quote-container');
+    
+    if (!showQuotes) {
+        quoteContainer.style.display = 'none';
+        return;
+    }
+    
+    quoteContainer.style.display = 'block';
+    
+    if (quoteElement && quoteAuthorElement) {
+        // Add loading state
+        quoteElement.style.opacity = '0.5';
+        quoteAuthorElement.style.opacity = '0.5';
+        
+        try {
+            const { text, author } = await fetchQuote();
+            quoteElement.textContent = `"${text}"`;
+            quoteAuthorElement.textContent = `- ${author}`;
+        } catch (error) {
+            console.error('Error updating quote:', error);
+        } finally {
+            // Remove loading state
+            quoteElement.style.opacity = '1';
+            quoteAuthorElement.style.opacity = '1';
+        }
+    }
+}
+
 // --- Initialization ---
 
 // Ensure the video resumes playback when the page becomes visible again
@@ -721,6 +778,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('focusModeActive') === 'true') {
         toggleFocusMode();
     }
+
+    // Initialize quotes setting
+    showQuotes = localStorage.getItem('showQuotes') !== 'false';
+    const settingsShowQuotes = document.getElementById('settings-show-quotes');
+    
+    if (settingsShowQuotes) {
+        // Initialize quotes setting
+        settingsShowQuotes.checked = showQuotes;
+        
+        // Handle quotes setting change
+        settingsShowQuotes.addEventListener('change', () => {
+            showQuotes = settingsShowQuotes.checked;
+            localStorage.setItem('showQuotes', showQuotes);
+            updateQuote();
+        });
+    }
+
+    // Initialize quote if enabled
+    if (showQuotes) {
+        updateQuote();
+        // Update quote every 6 hours
+        setInterval(updateQuote, 6 * 60 * 60 * 1000);
+    }
+    
+    // Initialize quote
+    updateQuote();
+    
+    // Update quote every 6 hours instead of 24 hours to get more variety
+    setInterval(updateQuote, 6 * 60 * 60 * 1000);
 });
 
 function toggleClockFormat() {

@@ -208,7 +208,7 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
     position: relative;
-    padding-right: 100px; /* Even more padding for better spacing */
+    padding-right: 240px; /* Maximum padding for button spacing */
 }
 
 #todo-list li:hover {
@@ -218,11 +218,11 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
 
 .todo-buttons {
     position: absolute;
-    right: 20px;
+    right: 24px;
     top: 50%;
     transform: translateY(-50%);
     display: flex;
-    gap: 15px; /* Very large gap between buttons */
+    gap: 120px; /* Maximum gap between buttons */
     opacity: 0;
     transition: all 0.3s ease;
     align-items: center;
@@ -597,5 +597,36 @@ input:checked + .toggle-slider {
 
 input:checked + .toggle-slider:before {
     transform: translateX(26px);
+}
+
+.quote-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 800px;
+    text-align: center;
+    animation: fadeIn 2s ease-in-out;
+    z-index: 10;
+}
+
+#quote {
+    font-family: 'NDOT', sans-serif;
+    font-size: 18px; /* Reduced from 24px */
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 8px; /* Reduced from 12px */
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#quote-author {
+    font-family: 'NDOT', sans-serif;
+    font-size: 14px; /* Reduced from 18px */
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.8);
+    font-style: italic;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
