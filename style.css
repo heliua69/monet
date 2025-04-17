@@ -207,11 +207,66 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
     -webkit-backdrop-filter: blur(4px);
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
+    position: relative;
+    padding-right: 100px; /* Even more padding for better spacing */
 }
 
 #todo-list li:hover {
     background: rgba(255, 255, 255, 0.1);
     transform: translateY(-1px);
+}
+
+.todo-buttons {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 15px; /* Very large gap between buttons */
+    opacity: 0;
+    transition: all 0.3s ease;
+    align-items: center;
+}
+
+#todo-list li:hover .todo-buttons {
+    opacity: 1;
+}
+
+/* Remove any duplicate button styles and use only these */
+.edit-button,
+.delete-button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05); /* Slight background to make buttons more visible */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px; /* Larger icons */
+    position: relative; /* Add this to ensure proper spacing */
+}
+
+.edit-button:hover,
+.delete-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.1);
+}
+
+.todo-text {
+    flex: 1;
+    min-width: 0;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.todo-text[contenteditable="true"] {
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
 }
 
 #todo-list button {
@@ -386,103 +441,6 @@ body, #clock, #greeting, #todo-container, #todo-container h3 {
 .clock-container {
     position: relative;
     display: inline-block;
-    cursor: pointer;
-}
-
-.format-dots {
-    position: absolute;
-    right: -30px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 28px;
-    color: rgba(255, 255, 255, 0.8);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    cursor: pointer;
-    padding: 10px;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.clock-container:hover .format-dots {
-    opacity: 1;
-}
-
-.format-toggle-box {
-    position: absolute;
-    right: -160px;  /* Move it further right to avoid overlap */
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.35);  /* Slightly darker background */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    padding: 12px 20px;
-    display: none;
-    align-items: center;
-    gap: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    z-index: 10;  /* Ensure it appears above other elements */
-}
-
-.format-toggle-box.show {
-    display: flex;
-}
-
-.format-label {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 14px;
-    font-family: 'NDOT', sans-serif;
-    padding: 0 5px;  /* Added padding to labels */
-}
-
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 20px;
-}
-
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.2);
-    transition: .3s;
-    border-radius: 20px;
-}
-
-.toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    left: 2px;
-    bottom: 2px;
-    background-color: white;
-    transition: .3s;
-    border-radius: 50%;
-}
-
-input:checked + .toggle-slider {
-    background-color: rgba(0, 123, 255, 0.5);
-}
-
-input:checked + .toggle-slider:before {
-    transform: translateX(20px);
 }
 
 /* Settings Button and Panel */
@@ -554,8 +512,90 @@ input:checked + .toggle-slider:before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding: 12px 16px;
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+}
+
+.setting-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.setting-item .toggle-switch {
+    margin-left: 16px;
+}
+
+.setting-item span {
+    font-family: 'NDOT', sans-serif;
+    letter-spacing: 0.02em;
+}
+
+.setting-toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 12px;
+}
+
+.toggle-label {
+    font-family: 'NDOT', sans-serif;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    min-width: 45px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: .3s;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: rgba(0, 123, 255, 0.5);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
 }
 

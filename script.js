@@ -553,34 +553,37 @@ document.addEventListener('DOMContentLoaded', () => {
     updateGreetingColor();
     updateTodoButtonsColor();
     
-    // Load clock format preference and set toggle state
+    // Load clock format preference
     is24HourFormat = localStorage.getItem('clockFormat24h') !== 'false';
-    const formatToggle = document.getElementById('format-toggle');
-    const formatDots = document.querySelector('.format-dots');
-    const toggleBox = document.querySelector('.format-toggle-box');
+    const settingsClockFormat = document.getElementById('settings-clock-format');
     
-    if (formatToggle) {
-        formatToggle.checked = is24HourFormat;
-    }
-    
-    // Handle format toggle box
-    if (formatDots && toggleBox) {
-        formatDots.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleBox.classList.toggle('show');
-        });
-        
-        // Handle toggle switch change
-        formatToggle.addEventListener('change', () => {
-            is24HourFormat = formatToggle.checked;
+    if (settingsClockFormat) {
+        // Initialize clock format setting
+        settingsClockFormat.checked = is24HourFormat;
+
+        // Handle clock format change
+        settingsClockFormat.addEventListener('change', () => {
+            is24HourFormat = settingsClockFormat.checked;
             localStorage.setItem('clockFormat24h', is24HourFormat);
             updateClock();
         });
-        
-        // Hide toggle box when clicking outside
+    }
+
+    // Initialize settings panel
+    const settingsButton = document.getElementById('settings-button');
+    const settingsPanel = document.getElementById('settings-panel');
+
+    if (settingsButton && settingsPanel) {
+        // Toggle settings panel
+        settingsButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            settingsPanel.classList.toggle('show');
+        });
+
+        // Hide settings panel when clicking outside
         document.addEventListener('click', (e) => {
-            if (!toggleBox.contains(e.target) && !formatDots.contains(e.target)) {
-                toggleBox.classList.remove('show');
+            if (!settingsPanel.contains(e.target) && !settingsButton.contains(e.target)) {
+                settingsPanel.classList.remove('show');
             }
         });
     }
@@ -618,17 +621,57 @@ document.addEventListener('DOMContentLoaded', () => {
             const listItem = document.createElement('li');
             const taskText = document.createElement('span');
             taskText.textContent = text;
+            taskText.classList.add('todo-text');
+            
+            const buttonsContainer = document.createElement('div');
+            buttonsContainer.classList.add('todo-buttons');
+            
+            const editButton = document.createElement('button');
+            editButton.innerHTML = '✎';
+            editButton.classList.add('edit-button');
+            editButton.addEventListener('click', () => {
+                const currentText = taskText.textContent;
+                taskText.contentEditable = true;
+                taskText.focus();
+                
+                // Create a range and select the text
+                const range = document.createRange();
+                range.selectNodeContents(taskText);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                
+                // Save on blur or enter
+                const saveChanges = () => {
+                    taskText.contentEditable = false;
+                    saveTodos();
+                    taskText.removeEventListener('blur', saveChanges);
+                    taskText.removeEventListener('keydown', handleEnter);
+                };
+                
+                const handleEnter = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        saveChanges();
+                    }
+                };
+                
+                taskText.addEventListener('blur', saveChanges);
+                taskText.addEventListener('keydown', handleEnter);
+            });
             
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.classList.add('dynamic-color');
+            deleteButton.innerHTML = '🗑️';
+            deleteButton.classList.add('delete-button');
             deleteButton.addEventListener('click', () => {
                 listItem.remove();
                 saveTodos();
             });
             
+            buttonsContainer.appendChild(editButton);
+            buttonsContainer.appendChild(deleteButton);
             listItem.appendChild(taskText);
-            listItem.appendChild(deleteButton);
+            listItem.appendChild(buttonsContainer);
             return listItem;
         }
 
@@ -677,36 +720,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Restore focus mode if it was active
     if (localStorage.getItem('focusModeActive') === 'true') {
         toggleFocusMode();
-    }
-
-    // Initialize settings panel
-    const settingsButton = document.getElementById('settings-button');
-    const settingsPanel = document.getElementById('settings-panel');
-    const settingsClockFormat = document.getElementById('settings-clock-format');
-
-    if (settingsButton && settingsPanel) {
-        // Initialize clock format setting
-        settingsClockFormat.checked = is24HourFormat;
-
-        // Toggle settings panel
-        settingsButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            settingsPanel.classList.toggle('show');
-        });
-
-        // Hide settings panel when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!settingsPanel.contains(e.target) && !settingsButton.contains(e.target)) {
-                settingsPanel.classList.remove('show');
-            }
-        });
-
-        // Handle clock format change
-        settingsClockFormat.addEventListener('change', () => {
-            is24HourFormat = settingsClockFormat.checked;
-            localStorage.setItem('clockFormat24h', is24HourFormat);
-            updateClock();
-        });
     }
 });
 
